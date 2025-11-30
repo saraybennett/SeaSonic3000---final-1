@@ -1,0 +1,22 @@
+{
+  "name": "seasonic3000---final",
+  "version": "1.0.0",
+  "description": "ima low res connections lab final",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pcomp",
+    "sea",
+    "creatures"
+  ],
+  "author": "sara bennett and katie cline",
+    "type": "module",
+  "license": "ISC",
+   "dependencies": {
+    "express": "^5.1.0",
+    "save": "^2.9.0",
+    "socket.io": "^4.8.1"
+  }
+}
