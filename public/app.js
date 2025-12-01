@@ -128,6 +128,11 @@ ws.onmessage = (event) => {
 
     // Handle initial state from server - need to update this with the data that we need in lines 23 in index.js
     if (data.type === "initialState") {
+      if (data.state.jellyState) {
+        jelly.classList.add("jelly-on");
+      } else {
+        jelly.classList.remove("jelly-on");
+      }
       // brightnessSlider.value = data.state.brightness;
       // brightnessValue.textContent = data.state.brightness;
       // flashSlider.value = data.state.pulseRate;
