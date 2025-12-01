@@ -326,6 +326,11 @@ h1 {
   /* min-width: 140px; */
 }
 
+.jelly-on {
+  border: 1px solid red;
+  /* can add animation here  */
+}
+
 #overlay {
   visibility: hidden;
   width: 100%;

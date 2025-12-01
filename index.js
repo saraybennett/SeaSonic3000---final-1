@@ -65,10 +65,10 @@ wss.on("connection", (ws, req) => {
       console.log("Received:", data); //peek at the incoming data
 
       // Example 1: Button toggle - MODIFY THIS FOR JELLY CODE
-      if (data.type === "buttonPress") {
-        serverState.ledOn = !serverState.ledOn; //toggle the led state
-        console.log("Button toggled to:", serverState.buttonPressed);
-        broadcast({ type: "ledState", value: serverState.ledOn });
+      if (data.type === "jellyPress") {
+        serverState.jellyOn = !serverState.jellyOn; //toggle the led state
+        console.log("Jelly toggled to:", serverState.jellyOn);
+        broadcast({ type: "jellyState", value: serverState.jellyOn });
       }
 
       //handle angler data - THIS IS NOT WORKING, NEED TO TROUBLESHOOT - SB 11.30

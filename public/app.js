@@ -143,6 +143,16 @@ ws.onmessage = (event) => {
       console.log("angler:", data.value);
     }
 
+    // // Update jelly value from other clients
+    if (data.type === "jellyState" && data.value !== undefined) {
+      console.log("jellyState:", data.value);
+      if (data.value) {
+        jelly.classList.add("jelly-on");
+      } else {
+        jelly.classList.remove("jelly-on");
+      }
+    }
+
     // Update servo slider from other clients
     // if (data.type === "servo" && data.value !== undefined) {
     //   servoSlider.value = data.value;
@@ -159,21 +169,16 @@ let jelly = document.getElementById("jelly");
 jelly.addEventListener("click", (event) => {
   console.log("jelly was clicked");
   if (ws.readyState === WebSocket.OPEN) {
-    ws
-      .send
-      //figure out what we need to send here to get the mouse press on the jelly to turn the motor off / on
-      ();
+    ws.send(
+      JSON.stringify({
+        type: "jellyPress",
+        value: "press", //unsure if we need this, keeping for now
+      })
+    );
   }
-
-  // fetch("/led", { method: "POST" }) //changes the state! - figure out how to incorporate this code with the above?
-  // .then((r) => r.json())
-  // .then((data) => {
-  //   //same logic as above, since the server is returning the led state this will update the button to match
-  //   toggleButton.textContent = data.lightState ? "ON" : "OFF"; //toggle the dom button to match the button state on the server
-  // });
 });
 
-//ANGLER 3 - somehow combine this to make it work for the motor situation?
+//ANGLER 3 - somehow combine this to make it work for the light/distance
 let angler = document.getElementById("angler");
 getButtonState(); //immediately gets the current state of the led update the dom
 function getButtonState() {
