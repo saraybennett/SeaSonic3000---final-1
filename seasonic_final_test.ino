@@ -10,8 +10,8 @@ char ssid[] = SECRET_SSID;  // your network SSID (name)
 char pass[] = SECRET_PASS;  // your network password (use for WPA, or use as key for WEP)
 
 // WebSocket server
-const char* websocket_server = "seasonic3000-final-testing.onrender.com";  //update this with the actual server url
-const int websocket_port = 443;                                            // SSL port for wss://
+const char* websocket_server = "seasonic3000-final-1.onrender.com";  //update this with the actual server url
+const int websocket_port = 443;                                      // SSL port for wss://
 
 // Pin definitions
 const int SERVO_PIN = 2;   //servo motor
@@ -34,6 +34,7 @@ Servo myServo;
 
 //state of my variables
 int servoPosition = 90;  //eventually want a motor that can be an off OR on bool
+bool jellyState = false;
 
 // Connection tracking
 unsigned long lastReconnectAttempt = 0;
@@ -46,6 +47,9 @@ const unsigned long heartbeatInterval = 30000;  // Send heartbeat every 30 secon
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial) {
+    ;  //Wait for serial port to connect
+  }
 
   // Initialize LEDs to off
   analogWrite(ANGLER_PIN, 0);
@@ -207,12 +211,12 @@ void handleMessage(String message) {
   const char* type = doc["type"];
 
   // Check for initialState message
-  String typeStr = String(type);                        //typecast the char* to a string for comparision
-  // if (typeStr == "initialState") {                      //all the data
-  //   ledState = doc["state"]["ledOn"];                   //update led state to match server state
-  //   digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly
-  //   Serial.print("Initial LED state: ");
-  //   Serial.println(ledState ? "ON" : "OFF");
+  String typeStr = String(type);  //typecast the char* to a string for comparision
+                                  // if (typeStr == "initialState") {                      //all the data
+                                  //   ledState = doc["state"]["ledOn"];                   //update led state to match server state
+                                  //   digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly
+                                  //   Serial.print("Initial LED state: ");
+                                  //   Serial.println(ledState ? "ON" : "OFF");
 
   //   // Get brightness and flashInterval from initial state
   //   if (doc["state"].containsKey("brightness")) {
@@ -228,21 +232,21 @@ void handleMessage(String message) {
   //     Serial.println(pulseInterval);
   //   }
 
-    if (doc["state"].containsKey("servo")) {
-      servoPosition = doc["state"]["servo"];
-      servoPosition = constrain(servoPosition, 0, 180);
-      myServo.write(servoPosition);
-      Serial.print("Initial servo position: ");
-      Serial.println(servoPosition);
-    }
-  
-  // Check for ledState message
-  // else if (typeStr == "ledState") {
-  //   ledState = doc["value"];                            //parse the led state from the returned json.
-  //   digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly
-  //   Serial.print("LED toggled to: ");
-  //   Serial.println(ledState ? "ON" : "OFF");
-  // }
+  if (doc["state"].containsKey("servo")) {
+    servoPosition = doc["state"]["servo"];
+    servoPosition = constrain(servoPosition, 0, 180);
+    myServo.write(servoPosition);
+    Serial.print("Initial servo position: ");
+    Serial.println(servoPosition);
+  }
+
+  // Check for jelly message
+  else if (typeStr == "jellyState") {
+    jellyState = doc["value"];  //parse the led state from the returned json.
+    // digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly
+    Serial.print("jellyState toggled to: ");
+    Serial.println(jellyState ? "ON" : "OFF");
+  }
   // // Check for brightness message
   // else if (typeStr == "brightness") {
   //   brightness = doc["value"];
