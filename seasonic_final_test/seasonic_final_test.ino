@@ -15,6 +15,7 @@ const int websocket_port = 443;                                      // SSL port
 
 // Pin definitions
 const int SERVO_PIN = 2;   //servo motor
+const int JELLY_PIN = 3;   //jelly light for testing
 const int ANGLER_PIN = 9;  //angler light
 
 
@@ -51,8 +52,12 @@ void setup() {
     ;  //Wait for serial port to connect
   }
 
+  //set pin mode:
+  pinMode(JELLY_PIN, OUTPUT);
+
   // Initialize LEDs to off
   analogWrite(ANGLER_PIN, 0);
+  digitalWrite(JELLY_PIN, LOW);
 
   // Initialize servo - eventually want a diff kind of motor
   myServo.attach(SERVO_PIN);
@@ -77,10 +82,10 @@ VL53L0X_SENSE_LONG_RANGE: about 2000mm range
 VL53L0X_SENSE_HIGH_SPEED: about 500mm range
 VL53L0X_SENSE_HIGH_ACCURACY: about 400mm range, 1mm accuracy
 */
-  //decide what configuration we want for this
-  /* sensor.configSensor(Adafruit_VL53L0X::VL53L0X_SENSE_LONG_RANGE); */
-  // set sensor to range continuously:
-  /* sensor.startRangeContinuous(); */
+  // //decide what configuration we want for this
+  // sensor.configSensor(Adafruit_VL53L0X::VL53L0X_SENSE_LONG_RANGE);
+  // // set sensor to range continuously:
+  // sensor.startRangeContinuous();
 }
 
 void loop() {
@@ -105,29 +110,30 @@ void loop() {
     //time of flight sensor - > light code - TOF not working 11.30 SB
     // Commented out until sensor is working properly
     // if (sensor.isRangeComplete()) {
-    //   // read the result:
-    //   int result = sensor.readRangeResult();
+    // // read the result:
+    // int result = sensor.readRangeResult();
 
-    //   //ai overview helped write this section
-    //   int brightness_angler = map(result, 40, 500, 255, 0);
+    // //ai overview helped write this section
+    // int brightness_angler = map(result, 40, 500, 255, 0);
 
-    //   // Ensure brightness is within the valid range (0-255)
-    //   brightness_angler = constrain(brightness_angler, 0, 255);
+    // // Ensure brightness is within the valid range (0-255)
+    // brightness_angler = constrain(brightness_angler, 0, 255);
 
-    //   // Set the LED brightness using PWM
-    //   analogWrite(ANGLER_PIN, brightness_angler);
+    // // Set the LED brightness using PWM
+    // analogWrite(ANGLER_PIN, brightness_angler);
 
-    //   // Print values for debugging
-    //   Serial.print("Distance (mm): ");
-    //   Serial.print(result);
-    //   Serial.print("\tBrightness (0-255): ");
-    //   Serial.println(brightness_angler);
-    //   Serial.println("brightness updated - sending to server");
+    // // Print values for debugging
+    // Serial.print("Distance (mm): ");
+    // Serial.print(result);
+    // Serial.print("\tBrightness (0-255): ");
+    // Serial.println(brightness_angler);
+    // Serial.println("brightness updated - sending to server");
 
-    //   // Send brightness to server - SEE adam's notes about this on discord
-    //   // wsClient.beginMessage(TYPE_TEXT);
-    //   // wsClient.print("{\"type\":\"brightness_angler\",\"value\":" + brightness_angler + "}");
-    //   // wsClient.endMessage();
+    // // Send brightness to server - SEE adam's notes about this on discord
+    //   wsClient.beginMessage(TYPE_TEXT);
+    //   String bangleString = String(brightness_angler);
+    //   wsClient.print("{\"type\":\"brightness_angler\",\"value\":" + bangleString + "}");
+    //   wsClient.endMessage();
     // }
     // else {
     //   // Handle invalid readings, e.g., by turning the LED off
@@ -213,7 +219,7 @@ void handleMessage(String message) {
   Serial.print("type string = ");
   Serial.println(typeStr);
 
-  if (typeStr == "initialState") {                      //all the data
+  if (typeStr == "initialState") {  //all the data
     /* ledState = doc["state"]["ledOn"];                   //update led state to match server state */
     /* digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly */
     /* Serial.print("Initial LED state: "); */
@@ -241,35 +247,35 @@ void handleMessage(String message) {
       Serial.println(servoPosition);
     }
 
-    if (doc["state"].containsKey("jellyOn")) { //when you are sending the initial state from your server the sent object has the key jellyOn, not jellyState
+    if (doc["state"].containsKey("jellyOn")) {  //when you are sending the initial state from your server the sent object has the key jellyOn, not jellyState
       jellyState = doc["state"]["jellyOn"];
       Serial.print("Initial jellyState: ");
       Serial.println(jellyState);
     }
 
 
-  } //end of initial state check
-    // // Check for brightness message
-    // else if (typeStr == "brightness") {
-    //   brightness = doc["value"];
-    //   analogWrite(YELLOW_LED_PIN, brightness);
-    //   Serial.print("Brightness updated to: ");
-    //   Serial.println(brightness);
-    // }
-    // // Check for flashInterval message
-    // else if (typeStr == "pulse") {
-    //   pulseInterval = doc["value"];
-    //   Serial.print("pulse interval updated to: ");
-    //   Serial.println(pulseInterval);
+  }  //end of initial state check
+  // // Check for brightness message
+  // else if (typeStr == "brightness") {
+  //   brightness = doc["value"];
+  //   analogWrite(YELLOW_LED_PIN, brightness);
+  //   Serial.print("Brightness updated to: ");
+  //   Serial.println(brightness);
+  // }
+  // // Check for flashInterval message
+  // else if (typeStr == "pulse") {
+  //   pulseInterval = doc["value"];
+  //   Serial.print("pulse interval updated to: ");
+  //   Serial.println(pulseInterval);
 
-    //   // Reset flash timer when interval changes
-    //   lastPulseTime = millis();
-    //   if (pulseInterval == 0) {
-    //     digitalWrite(GREEN_LED_PIN, LOW);
-    //     greenLedState = false;
-    //   }
-    // }
-    // Check for servo message
+  //   // Reset flash timer when interval changes
+  //   lastPulseTime = millis();
+  //   if (pulseInterval == 0) {
+  //     digitalWrite(GREEN_LED_PIN, LOW);
+  //     greenLedState = false;
+  //   }
+  // }
+  // Check for servo message
   else if (typeStr == "servo") {
     servoPosition = doc["value"];
     // Constrain value to valid servo range (0-180)
@@ -277,12 +283,10 @@ void handleMessage(String message) {
     myServo.write(servoPosition);
     Serial.print("Servo position updated to: ");
     Serial.println(servoPosition);
-  } else if (typeStr == "jellyState") { //check for jellyState, your server is sending the message jellyState with a value of true or false
-    jellyState = doc["value"];  //parse the led state from the returned json.
-                                // digitalWrite(BLUE_LED_PIN, ledState ? HIGH : LOW);  //ternery, handle the light value accordingly
+  } else if (typeStr == "jellyState") {                //check for jellyState, your server is sending the message jellyState with a value of true or false
+    jellyState = doc["value"];                         //parse the led state from the returned json.
+    digitalWrite(JELLY_PIN, jellyState ? HIGH : LOW);  //ternery, handle the light value accordingly
     Serial.print("jellyState toggled to: ");
     Serial.println(jellyState ? "ON" : "OFF");
   }
-
 }
-
