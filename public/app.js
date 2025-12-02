@@ -29,18 +29,19 @@ const anglerAudio = new Audio("./audio/angler.mp3");
 anglerAudio.loop = true;
 
 //booleans to handle if creature has been pressed or not
-let planktonIsPlaying = false;
-let seaweedIsPlaying = false;
-let anglerIsPlaying = false;
-let angelIsPlaying = false;
-let urchinIsPlaying = false;
-let eelIsPlaying = false;
-let jellyIsPlaying = false;
-let snailIsPlaying = false;
+//not sure we need this -keeping for now
+// let planktonIsPlaying = false;
+// let seaweedIsPlaying = false;
+// let anglerIsPlaying = false;
+// let angelIsPlaying = false;
+// let urchinIsPlaying = false;
+// let eelIsPlaying = false;
+// let jellyIsPlaying = false;
+// let snailIsPlaying = false;
 
 //if we want a background just affected by mouse positions / filters
-const backgroundAudio = new Audio("./audio/background.mp3");
-backgroundAudio.loop = true;
+// const backgroundAudio = new Audio("./audio/background.mp3");
+// backgroundAudio.loop = true;
 
 let users = {};
 let socket; //make sure this is declared in the global scope!
